@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 const Home = () => import('./views/Home.vue');
+const Setup = () => import('./views/Setup.vue');
 
 // Activity views for desktop
 const Activity = () => import('./views/activity/Activity.vue');
@@ -34,6 +35,7 @@ const router = new VueRouter({
       },
     },
     { path: '/home', component: Home },
+    { path: '/setup', component: Setup },
     {
       path: '/activity/:host/:periodLength?/:date?',
       component: Activity,
