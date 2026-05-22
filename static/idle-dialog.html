@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Idle time alert</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #d1d5db;
+        --panel: #f9fafb;
+        --primary: #111827;
+        --primary-soft: #374151;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        min-height: 100%;
+        margin: 0;
+        background: #eef2f7;
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        padding: 18px;
+      }
+
+      .dialog {
+        width: min(100%, 444px);
+        background: var(--white);
+        border: 1px solid rgba(17, 24, 39, 0.08);
+        border-radius: 8px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 22px 24px 10px;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 650;
+        letter-spacing: 0;
+      }
+
+      .body {
+        padding: 10px 24px 18px;
+      }
+
+      .idle-card {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+
+      .idle-card-top {
+        padding: 18px 18px 14px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .label {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .duration {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 16px;
+      }
+
+      .meta p {
+        margin: 0;
+        color: #374151;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .link-button {
+        border: 0;
+        background: transparent;
+        color: #2563eb;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 6px 0;
+        white-space: nowrap;
+      }
+
+      .question {
+        margin-top: 20px;
+      }
+
+      .question-title {
+        margin: 0 0 10px;
+        font-size: 15px;
+        font-weight: 650;
+      }
+
+      .radio-group {
+        display: grid;
+        gap: 10px;
+      }
+
+      .radio {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 38px;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .radio input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary);
+      }
+
+      .radio span {
+        font-size: 14px;
+      }
+
+      .footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 0 24px 24px;
+      }
+
+      .button {
+        min-height: 42px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .button.secondary {
+        background: var(--white);
+        color: #374151;
+      }
+
+      .button.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: var(--white);
+      }
+
+      .reassign {
+        display: none;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 14px;
+      }
+
+      .field label {
+        color: #374151;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .field input {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: var(--text);
+        font: inherit;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="title">
+      <section id="idle-view">
+        <div class="header">
+          <h1 id="title">Idle time alert</h1>
+        </div>
+        <div class="body">
+          <div class="idle-card">
+            <div class="idle-card-top">
+              <p class="label">You have been idle for</p>
+              <p class="duration" id="duration">1 minute</p>
+            </div>
+            <div class="meta">
+              <div>
+                <p id="project-line">Project: Current timer</p>
+                <p id="task-line">To-do: Active work</p>
+              </div>
+              <button class="link-button" type="button" id="reassign-link">Reassign time</button>
+            </div>
+          </div>
+
+          <div class="question">
+            <p class="question-title">Were you working?</p>
+            <div class="radio-group" role="radiogroup" aria-label="Were you working?">
+              <label class="radio">
+                <input type="radio" name="answer" value="no" />
+                <span>No, discard idle time</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="answer" value="yes" checked />
+                <span>Yes, keep idle time</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <button class="button secondary" type="button" data-close>Stop timer</button>
+          <button class="button primary" type="button" data-close>Resume timer</button>
+        </div>
+      </section>
+
+      <section id="reassign-view" class="reassign">
+        <div class="header">
+          <h1 id="reassign-title">Reassigning: 1 minute</h1>
+        </div>
+        <div class="body">
+          <div class="field">
+            <label for="project">Project</label>
+            <input id="project" value="Current timer" />
+          </div>
+          <div class="field">
+            <label for="task">To-do</label>
+            <input id="task" value="Active work" />
+          </div>
+        </div>
+        <div class="footer">
+          <button class="button secondary" type="button" id="reassign-cancel">Cancel</button>
+          <button class="button primary" type="button" data-close>Assign</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const payload = window.__AW_IDLE_DIALOG_PAYLOAD__ || {};
+      const idleSeconds = Math.max(Number(payload.idle_seconds) || 0, 0);
+      const idleMinutes = Math.max(Math.floor(idleSeconds / 60), 1);
+      const minuteText = `${idleMinutes} minute${idleMinutes === 1 ? "" : "s"}`;
+
+      document.getElementById("duration").textContent = minuteText;
+      document.getElementById("reassign-title").textContent = `Reassigning: ${minuteText}`;
+
+      async function closeDialog() {
+        try {
+          if (window.__TAURI_INTERNALS__) {
+            await window.__TAURI_INTERNALS__.invoke("close_idle_dialog", {});
+            return;
+          }
+        } catch (error) {
+          console.debug("close_idle_dialog failed", error);
+        }
+        window.close();
+      }
+
+      document.querySelectorAll("[data-close]").forEach((button) => {
+        button.addEventListener("click", closeDialog);
+      });
+
+      document.getElementById("reassign-link").addEventListener("click", () => {
+        document.getElementById("idle-view").classList.add("hidden");
+        document.getElementById("reassign-view").style.display = "block";
+      });
+
+      document.getElementById("reassign-cancel").addEventListener("click", () => {
+        document.getElementById("reassign-view").style.display = "none";
+        document.getElementById("idle-view").classList.remove("hidden");
+      });
+    </script>
+  </body>
+</html>
