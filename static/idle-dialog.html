@@ -486,23 +486,44 @@
 
       function minuteTextFromPayload(nextPayload) {
         const idleSeconds = Math.max(Number(nextPayload.idle_seconds) || 0, 0);
-        const idleMinutes = Math.max(Math.floor(idleSeconds / 60), 1);
-        return `${idleMinutes} minute${idleMinutes === 1 ? "" : "s"}`;
+        const idleMinutes = Math.floor(idleSeconds / 60);
+        return `${idleMinutes} minute${idleMinutes !== 1 ? "s" : ""}`;
       }
 
-      function setSingleOption(select, value, label, emptyLabel) {
+      function populateProjectSelect(select, projects, selectedId) {
+        const prev = select.value;
         select.innerHTML = "";
         const empty = document.createElement("option");
         empty.value = "";
-        empty.textContent = emptyLabel;
+        empty.textContent = "Select a project";
         select.appendChild(empty);
-        if (value) {
-          const option = document.createElement("option");
-          option.value = String(value);
-          option.textContent = label || String(value);
-          option.selected = true;
-          select.appendChild(option);
+        for (const p of projects) {
+          const opt = document.createElement("option");
+          opt.value = String(p.id);
+          opt.textContent = p.name;
+          if (String(p.id) === String(selectedId || "")) opt.selected = true;
+          select.appendChild(opt);
         }
+        if (prev && select.querySelector(`option[value="${CSS.escape(prev)}"]`)) {
+          select.value = prev;
+        }
+      }
+
+      function populateTaskSelect(select, projects, projectId, selectedTaskId) {
+        select.innerHTML = "";
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = "Select a to-do";
+        select.appendChild(empty);
+        const project = (projects || []).find((p) => String(p.id) === String(projectId || ""));
+        for (const t of (project?.tasks || [])) {
+          const opt = document.createElement("option");
+          opt.value = String(t.id);
+          opt.textContent = t.name;
+          if (String(t.id) === String(selectedTaskId || "")) opt.selected = true;
+          select.appendChild(opt);
+        }
+        select.disabled = !project;
       }
 
       function render(nextPayload) {
@@ -512,8 +533,8 @@
         reassignTitleEl.textContent = `Reassigning: ${minuteText}`;
         projectLineEl.textContent = `Project: ${payload.project_name || "Development"}`;
         taskLineEl.textContent = `To-do: ${payload.task_name || "Bookkeeping"}`;
-        setSingleOption(projectSelect, payload.project_id, payload.project_name, "Select a project");
-        setSingleOption(taskSelect, payload.task_id, payload.task_name, "Select a to-do");
+        populateProjectSelect(projectSelect, payload.available_projects || [], payload.project_id);
+        populateTaskSelect(taskSelect, payload.available_projects || [], projectSelect.value || payload.project_id, payload.task_id);
       }
 
       async function closeDialog() {
@@ -578,6 +599,10 @@
       document.getElementById("reassign-cancel").addEventListener("click", () => {
         reassignView.classList.add("hidden");
         idleView.classList.remove("hidden");
+      });
+
+      projectSelect.addEventListener("change", () => {
+        populateTaskSelect(taskSelect, payload.available_projects || [], projectSelect.value, null);
       });
 
       document.getElementById("reassign-assign").addEventListener("click", () => {
