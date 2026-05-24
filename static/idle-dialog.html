@@ -7,13 +7,12 @@
     <style>
       :root {
         color-scheme: light;
-        --text: #111827;
-        --muted: #6b7280;
-        --border: #d1d5db;
-        --panel: #f9fafb;
-        --primary: #111827;
-        --primary-soft: #374151;
-        --white: #ffffff;
+        --lf-at-purple: #714b67;
+        --lf-at-purple-light: #99698e;
+        --lf-at-text: #101828;
+        --lf-at-muted: #6a7282;
+        --lf-at-border: #e5e7eb;
+        --lf-at-dark-gray: #364153;
       }
 
       * {
@@ -23,267 +22,499 @@
       html,
       body {
         width: 100%;
-        min-height: 100%;
+        height: 100%;
+        min-height: 0;
         margin: 0;
-        background: #eef2f7;
-        color: var(--text);
-        font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
+        background: transparent;
+        overflow: hidden;
       }
 
       body {
-        display: grid;
-        place-items: center;
-        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        color: var(--lf-at-text);
+        font-family: Inter, var(--font-family-sans-serif, system-ui), sans-serif;
       }
 
-      .dialog {
-        width: min(100%, 444px);
-        background: var(--white);
-        border: 1px solid rgba(17, 24, 39, 0.08);
-        border-radius: 8px;
-        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+      button,
+      select {
+        font: inherit;
+      }
+
+      .lf-at-overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+      }
+
+      .lf-at-dialog {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 672px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow:
+          0 8px 10px -6px rgba(0, 0, 0, 0.1),
+          0 20px 25px -5px rgba(0, 0, 0, 0.1);
         overflow: hidden;
       }
 
-      .header {
-        padding: 22px 24px 10px;
-        text-align: center;
+      .lf-at-idle-header {
+        display: flex;
+        align-items: center;
+        min-height: 61px;
+        padding: 16px 24px 1px;
+        border-bottom: 1px solid var(--lf-at-border);
+        flex-shrink: 0;
       }
 
-      h1 {
+      .lf-at-idle-header h2 {
+        flex: 1;
         margin: 0;
-        font-size: 22px;
-        font-weight: 650;
-        letter-spacing: 0;
-      }
-
-      .body {
-        padding: 10px 24px 18px;
-      }
-
-      .idle-card {
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--panel);
-        overflow: hidden;
-      }
-
-      .idle-card-top {
-        padding: 18px 18px 14px;
         text-align: center;
-        border-bottom: 1px solid var(--border);
+        color: var(--lf-at-text);
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 28px;
       }
 
-      .label {
-        margin: 0 0 6px;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0;
+      .lf-at-idle-body {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px 24px 0;
+      }
+
+      .lf-at-idle-card {
+        padding: 25px 25px 1px;
+        border: 1px solid var(--lf-at-border);
+        border-radius: 10px;
+        background: #f9fafb;
+      }
+
+      .lf-at-idle-card__top {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .lf-at-idle-label {
+        margin: 0;
+        color: var(--lf-at-muted);
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0.35px;
+        line-height: 20px;
         text-transform: uppercase;
       }
 
-      .duration {
+      .lf-at-idle-duration {
         margin: 0;
-        font-size: 24px;
-        font-weight: 700;
+        color: var(--lf-at-text);
+        font-size: 30px;
+        font-weight: 400;
+        line-height: 36px;
       }
 
-      .meta {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items: center;
-        padding: 14px 16px;
+      .lf-at-idle-card__meta {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 16px 0 24px;
+        border-top: 1px solid var(--lf-at-border);
       }
 
-      .meta p {
+      .lf-at-idle-meta__info {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .lf-at-idle-meta__info p {
         margin: 0;
-        color: #374151;
-        font-size: 13px;
-        line-height: 1.45;
+        color: var(--lf-at-dark-gray);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
       }
 
-      .link-button {
+      .lf-at-idle-meta__reassign {
+        flex-shrink: 0;
+        padding: 0;
         border: 0;
         background: transparent;
-        color: #2563eb;
+        color: var(--lf-at-purple-light);
         cursor: pointer;
-        font: inherit;
-        font-size: 13px;
-        font-weight: 600;
-        padding: 6px 0;
-        white-space: nowrap;
+        font-family: Inter, sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
       }
 
-      .question {
-        margin-top: 20px;
+      .lf-at-idle-meta__reassign:hover {
+        text-decoration: underline;
       }
 
-      .question-title {
-        margin: 0 0 10px;
-        font-size: 15px;
-        font-weight: 650;
+      .lf-at-idle-question-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding-bottom: 24px;
       }
 
-      .radio-group {
-        display: grid;
-        gap: 10px;
+      .lf-at-idle-question {
+        margin: 0;
+        color: var(--lf-at-text);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
       }
 
-      .radio {
+      .lf-at-radio-group {
         display: flex;
         align-items: center;
-        gap: 10px;
-        min-height: 38px;
-        padding: 8px 10px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
+        gap: 32px;
+      }
+
+      .lf-at-radio {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         cursor: pointer;
         user-select: none;
       }
 
-      .radio input {
+      .lf-at-radio__button {
+        position: relative;
         width: 16px;
         height: 16px;
-        accent-color: var(--primary);
+        flex-shrink: 0;
+        border: 1px solid var(--lf-at-purple-light);
+        border-radius: 50%;
+        background: #ffffff;
       }
 
-      .radio span {
+      .lf-at-radio__button::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--lf-at-purple-light);
+        content: "";
+        opacity: 0;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.15s;
+      }
+
+      .lf-at-radio.is-checked .lf-at-radio__button {
+        box-shadow: 0 0 0 2px rgba(114, 46, 209, 0.08);
+      }
+
+      .lf-at-radio.is-checked .lf-at-radio__button::after {
+        opacity: 1;
+      }
+
+      .lf-at-radio__label {
+        color: #1f1f1f;
         font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
       }
 
-      .footer {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+      .lf-at-idle-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
         gap: 12px;
-        padding: 0 24px 24px;
+        padding: 16px 24px;
+        border-top: 1px solid var(--lf-at-border);
+        flex-shrink: 0;
       }
 
-      .button {
-        min-height: 42px;
+      .lf-at-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 96px;
+        height: 42px;
+        padding: 0 24px;
+        border: 0;
         border-radius: 8px;
-        border: 1px solid var(--border);
         cursor: pointer;
-        font: inherit;
-        font-size: 14px;
-        font-weight: 650;
+        font-family: Inter, sans-serif;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+        text-align: center;
+        transition:
+          filter 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      .button.secondary {
-        background: var(--white);
-        color: #374151;
+      .lf-at-btn:hover {
+        filter: brightness(0.93);
       }
 
-      .button.primary {
-        border-color: var(--primary);
-        background: var(--primary);
-        color: var(--white);
+      .lf-at-btn:active {
+        transform: scale(0.98);
       }
 
-      .reassign {
-        display: none;
-      }
-
-      .field {
-        display: grid;
-        gap: 6px;
-        margin-bottom: 14px;
-      }
-
-      .field label {
-        color: #374151;
-        font-size: 13px;
-        font-weight: 650;
-      }
-
-      .field input {
-        width: 100%;
-        min-height: 38px;
-        border: 1px solid var(--border);
+      .lf-at-btn:focus-visible {
         border-radius: 8px;
-        padding: 8px 10px;
-        color: var(--text);
-        font: inherit;
+        outline: 2px solid rgba(113, 75, 103, 0.3);
+        outline-offset: 2px;
+      }
+
+      .lf-at-btn:disabled {
+        cursor: default;
+        filter: none;
+        opacity: 0.55;
+        transform: none;
+      }
+
+      .lf-at-btn--primary {
+        background: var(--lf-at-purple);
+        color: #ffffff;
+      }
+
+      .lf-at-btn--outline-gray {
+        border: 1px solid #d1d5dc;
+        background: #ffffff;
+        color: var(--lf-at-dark-gray);
+      }
+
+      .lf-at-reassign-body {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px 24px 0;
+      }
+
+      .lf-at-reassign-title {
+        margin: 0;
+        color: var(--lf-at-text);
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 28px;
+      }
+
+      .lf-at-reassign-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .lf-at-reassign-label {
+        color: var(--lf-at-text);
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+      }
+
+      .lf-at-reassign-select {
+        width: 100%;
+        height: 40px;
+        padding: 8px 32px 8px 16px;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        outline: none;
+        appearance: none;
+        background:
+          linear-gradient(45deg, transparent 50%, #262626 50%) calc(100% - 17px) 17px / 5px
+            5px no-repeat,
+          linear-gradient(135deg, #262626 50%, transparent 50%) calc(100% - 12px) 17px / 5px
+            5px no-repeat,
+          #ffffff;
+        color: #262626;
+        cursor: pointer;
+        font-family: Inter, sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+        transition: border-color 0.18s;
+      }
+
+      .lf-at-reassign-select:focus {
+        border-color: var(--lf-at-purple-light);
+        box-shadow: 0 0 0 2px rgba(153, 105, 142, 0.12);
+      }
+
+      .lf-at-reassign-select:disabled {
+        background-color: #f5f5f5;
+        color: #8c8c8c;
+        cursor: default;
       }
 
       .hidden {
         display: none;
       }
+
+      @media (max-width: 560px) {
+        .lf-at-idle-card__meta,
+        .lf-at-radio-group {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .lf-at-idle-footer {
+          align-items: stretch;
+          flex-direction: column-reverse;
+        }
+
+        .lf-at-btn {
+          width: 100%;
+        }
+      }
     </style>
   </head>
   <body>
-    <main class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="title">
-      <section id="idle-view">
-        <div class="header">
-          <h1 id="title">Idle time alert</h1>
+    <main class="lf-at-overlay">
+      <section
+        id="idle-view"
+        class="lf-at-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="lf-at-idle-title"
+      >
+        <div class="lf-at-idle-header">
+          <h2 id="lf-at-idle-title">Idle time alert</h2>
         </div>
-        <div class="body">
-          <div class="idle-card">
-            <div class="idle-card-top">
-              <p class="label">You have been idle for</p>
-              <p class="duration" id="duration">1 minute</p>
+
+        <div class="lf-at-idle-body">
+          <div class="lf-at-idle-card">
+            <div class="lf-at-idle-card__top">
+              <p class="lf-at-idle-label">YOU HAVE BEEN IDLE FOR</p>
+              <p class="lf-at-idle-duration" id="duration">1 minute</p>
             </div>
-            <div class="meta">
-              <div>
-                <p id="project-line">Project: Current timer</p>
-                <p id="task-line">To-do: Active work</p>
+            <div class="lf-at-idle-card__meta">
+              <div class="lf-at-idle-meta__info">
+                <p id="project-line">Project: Development</p>
+                <p id="task-line">To-do: Bookkeeping</p>
               </div>
-              <button class="link-button" type="button" id="reassign-link">Reassign time</button>
+              <button class="lf-at-idle-meta__reassign" type="button" id="reassign-link">
+                Reassign time
+              </button>
             </div>
           </div>
 
-          <div class="question">
-            <p class="question-title">Were you working?</p>
-            <div class="radio-group" role="radiogroup" aria-label="Were you working?">
-              <label class="radio">
-                <input type="radio" name="answer" value="no" />
-                <span>No, discard idle time</span>
+          <div class="lf-at-idle-question-section">
+            <p class="lf-at-idle-question">Were you working?</p>
+            <div class="lf-at-radio-group" role="radiogroup" aria-label="Were you working?">
+              <label class="lf-at-radio" data-answer="no">
+                <span class="lf-at-radio__button" role="radio" aria-checked="false"></span>
+                <span class="lf-at-radio__label">No, discard idle time</span>
               </label>
-              <label class="radio">
-                <input type="radio" name="answer" value="yes" checked />
-                <span>Yes, keep idle time</span>
+              <label class="lf-at-radio is-checked" data-answer="yes">
+                <span class="lf-at-radio__button" role="radio" aria-checked="true"></span>
+                <span class="lf-at-radio__label">Yes, keep idle time</span>
               </label>
             </div>
           </div>
         </div>
-        <div class="footer">
-          <button class="button secondary" type="button" data-close>Stop timer</button>
-          <button class="button primary" type="button" data-close>Resume timer</button>
+
+        <div class="lf-at-idle-footer">
+          <button class="lf-at-btn lf-at-btn--outline-gray" type="button" data-resume="false">
+            Stop timer
+          </button>
+          <button class="lf-at-btn lf-at-btn--primary" type="button" data-resume="true">
+            Resume timer
+          </button>
         </div>
       </section>
 
-      <section id="reassign-view" class="reassign">
-        <div class="header">
-          <h1 id="reassign-title">Reassigning: 1 minute</h1>
-        </div>
-        <div class="body">
-          <div class="field">
-            <label for="project">Project</label>
-            <input id="project" value="Current timer" />
+      <section
+        id="reassign-view"
+        class="lf-at-dialog hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lf-at-reassign-title"
+      >
+        <div class="lf-at-reassign-body">
+          <h2 id="lf-at-reassign-title" class="lf-at-reassign-title">Reassigning: 1 minute</h2>
+
+          <div class="lf-at-reassign-field">
+            <label class="lf-at-reassign-label" for="lf-at-reassign-project">
+              Project/Work order:
+            </label>
+            <select id="lf-at-reassign-project" class="lf-at-reassign-select">
+              <option value="">Select a project</option>
+            </select>
           </div>
-          <div class="field">
-            <label for="task">To-do</label>
-            <input id="task" value="Active work" />
+
+          <div class="lf-at-reassign-field">
+            <label class="lf-at-reassign-label" for="lf-at-reassign-task">To-do:</label>
+            <select id="lf-at-reassign-task" class="lf-at-reassign-select">
+              <option value="">Select a to-do</option>
+            </select>
           </div>
         </div>
-        <div class="footer">
-          <button class="button secondary" type="button" id="reassign-cancel">Cancel</button>
-          <button class="button primary" type="button" data-close>Assign</button>
+
+        <div class="lf-at-idle-footer">
+          <button class="lf-at-btn lf-at-btn--outline-gray" type="button" id="reassign-cancel">
+            Cancel
+          </button>
+          <button class="lf-at-btn lf-at-btn--primary" type="button" id="reassign-assign">Assign</button>
         </div>
       </section>
     </main>
 
     <script>
-      const payload = window.__AW_IDLE_DIALOG_PAYLOAD__ || {};
-      const idleSeconds = Math.max(Number(payload.idle_seconds) || 0, 0);
-      const idleMinutes = Math.max(Math.floor(idleSeconds / 60), 1);
-      const minuteText = `${idleMinutes} minute${idleMinutes === 1 ? "" : "s"}`;
+      let payload = window.__AW_IDLE_DIALOG_PAYLOAD__ || {};
+      let selectedAnswer = "yes";
 
-      document.getElementById("duration").textContent = minuteText;
-      document.getElementById("reassign-title").textContent = `Reassigning: ${minuteText}`;
+      const idleView = document.getElementById("idle-view");
+      const reassignView = document.getElementById("reassign-view");
+      const durationEl = document.getElementById("duration");
+      const reassignTitleEl = document.getElementById("lf-at-reassign-title");
+      const projectLineEl = document.getElementById("project-line");
+      const taskLineEl = document.getElementById("task-line");
+      const projectSelect = document.getElementById("lf-at-reassign-project");
+      const taskSelect = document.getElementById("lf-at-reassign-task");
+
+      function minuteTextFromPayload(nextPayload) {
+        const idleSeconds = Math.max(Number(nextPayload.idle_seconds) || 0, 0);
+        const idleMinutes = Math.max(Math.floor(idleSeconds / 60), 1);
+        return `${idleMinutes} minute${idleMinutes === 1 ? "" : "s"}`;
+      }
+
+      function setSingleOption(select, value, label, emptyLabel) {
+        select.innerHTML = "";
+        const empty = document.createElement("option");
+        empty.value = "";
+        empty.textContent = emptyLabel;
+        select.appendChild(empty);
+        if (value) {
+          const option = document.createElement("option");
+          option.value = String(value);
+          option.textContent = label || String(value);
+          option.selected = true;
+          select.appendChild(option);
+        }
+      }
+
+      function render(nextPayload) {
+        payload = { ...payload, ...(nextPayload || {}) };
+        const minuteText = minuteTextFromPayload(payload);
+        durationEl.textContent = minuteText;
+        reassignTitleEl.textContent = `Reassigning: ${minuteText}`;
+        projectLineEl.textContent = `Project: ${payload.project_name || "Development"}`;
+        taskLineEl.textContent = `To-do: ${payload.task_name || "Bookkeeping"}`;
+        setSingleOption(projectSelect, payload.project_id, payload.project_name, "Select a project");
+        setSingleOption(taskSelect, payload.task_id, payload.task_name, "Select a to-do");
+      }
 
       async function closeDialog() {
         try {
@@ -297,19 +528,67 @@
         window.close();
       }
 
-      document.querySelectorAll("[data-close]").forEach((button) => {
-        button.addEventListener("click", closeDialog);
+      function numberOrNull(value) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+      }
+
+      async function sendAction(action, resumeTimer, extra = {}) {
+        try {
+          if (window.__TAURI_INTERNALS__) {
+            await window.__TAURI_INTERNALS__.invoke("idle_dialog_action", {
+              timerSessionId: numberOrNull(payload.timer_session_id),
+              action,
+              resumeTimer,
+              projectId: numberOrNull(extra.project_id),
+              taskId: numberOrNull(extra.task_id),
+            });
+          }
+        } catch (error) {
+          console.debug("idle_dialog_action failed", error);
+        }
+        await closeDialog();
+      }
+
+      function selectAnswer(answer) {
+        selectedAnswer = answer;
+        document.querySelectorAll(".lf-at-radio").forEach((radio) => {
+          const checked = radio.dataset.answer === answer;
+          radio.classList.toggle("is-checked", checked);
+          radio.querySelector("[role='radio']").setAttribute("aria-checked", String(checked));
+        });
+      }
+
+      document.querySelectorAll(".lf-at-radio").forEach((radio) => {
+        radio.addEventListener("click", () => selectAnswer(radio.dataset.answer));
+      });
+
+      document.querySelectorAll("[data-resume]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = selectedAnswer === "yes" ? "keep" : "discard";
+          sendAction(action, button.dataset.resume === "true");
+        });
       });
 
       document.getElementById("reassign-link").addEventListener("click", () => {
-        document.getElementById("idle-view").classList.add("hidden");
-        document.getElementById("reassign-view").style.display = "block";
+        idleView.classList.add("hidden");
+        reassignView.classList.remove("hidden");
       });
 
       document.getElementById("reassign-cancel").addEventListener("click", () => {
-        document.getElementById("reassign-view").style.display = "none";
-        document.getElementById("idle-view").classList.remove("hidden");
+        reassignView.classList.add("hidden");
+        idleView.classList.remove("hidden");
       });
+
+      document.getElementById("reassign-assign").addEventListener("click", () => {
+        sendAction("reassign", true, {
+          project_id: projectSelect.value,
+          task_id: taskSelect.value,
+        });
+      });
+
+      window.__AW_IDLE_DIALOG_UPDATE__ = render;
+      render(payload);
     </script>
   </body>
 </html>
