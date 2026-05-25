@@ -605,6 +605,10 @@
       document.getElementById("reassign-link").addEventListener("click", () => {
         idleView.classList.add("hidden");
         reassignView.classList.remove("hidden");
+        // Re-populate selects here in case render() ran while view was hidden
+        // or payload was updated via __AW_IDLE_DIALOG_UPDATE__ after initial render.
+        populateProjectSelect(projectSelect, payload.available_projects || [], payload.project_id);
+        populateTaskSelect(taskSelect, payload.available_projects || [], projectSelect.value || payload.project_id, payload.task_id);
         resizeWindowToView(reassignView);
       });
 
@@ -627,6 +631,7 @@
 
       window.__AW_IDLE_DIALOG_UPDATE__ = render;
       render(payload);
+      resizeWindowToView(idleView);
     </script>
   </body>
 </html>
