@@ -33,7 +33,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0;
+        padding: 12px 0;
         color: var(--lf-at-text);
         font-family: Inter, var(--font-family-sans-serif, system-ui), sans-serif;
       }
@@ -540,7 +540,7 @@
         if (!window.__TAURI_INTERNALS__) return;
         await new Promise((r) => requestAnimationFrame(r));
         await new Promise((r) => requestAnimationFrame(r));
-        const h = Math.ceil(viewEl.getBoundingClientRect().height);
+        const h = Math.ceil(viewEl.getBoundingClientRect().height) + 24; // 2×12px body padding
         try {
           await window.__TAURI_INTERNALS__.invoke("set_idle_dialog_height", { height: h });
         } catch (e) {
