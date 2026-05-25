@@ -536,6 +536,18 @@
         populateTaskSelect(taskSelect, payload.available_projects || [], projectSelect.value || payload.project_id, payload.task_id);
       }
 
+      async function resizeWindowToView(viewEl) {
+        if (!window.__TAURI_INTERNALS__) return;
+        await new Promise((r) => requestAnimationFrame(r));
+        await new Promise((r) => requestAnimationFrame(r));
+        const h = Math.ceil(viewEl.getBoundingClientRect().height);
+        try {
+          await window.__TAURI_INTERNALS__.invoke("set_idle_dialog_height", { height: h });
+        } catch (e) {
+          console.debug("set_idle_dialog_height failed", e);
+        }
+      }
+
       async function closeDialog() {
         try {
           if (window.__TAURI_INTERNALS__) {
@@ -593,11 +605,13 @@
       document.getElementById("reassign-link").addEventListener("click", () => {
         idleView.classList.add("hidden");
         reassignView.classList.remove("hidden");
+        resizeWindowToView(reassignView);
       });
 
       document.getElementById("reassign-cancel").addEventListener("click", () => {
         reassignView.classList.add("hidden");
         idleView.classList.remove("hidden");
+        resizeWindowToView(idleView);
       });
 
       projectSelect.addEventListener("change", () => {
