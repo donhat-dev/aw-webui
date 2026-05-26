@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { DEFAULT_ODOO_TOKEN, DEFAULT_ODOO_URL } from '~/util/odooDefaults';
 import { getClient } from '~/util/awclient';
 
 interface PublicUser {
@@ -22,9 +23,6 @@ interface State {
   error: string;
   notice: string;
 }
-
-const DEFAULT_ODOO_URL = 'https://dev-hrm.lfglobaltech.com';
-const DEFAULT_TOKEN = 'ff914bde-b9aa-4499-b16f-e9c6554964b0';
 
 function errorMessage(error: unknown): string {
   const response = (error as any)?.response;
@@ -52,10 +50,10 @@ export const useOdooStore = defineStore('odoo', {
     resolving: false,
     enabled: true,
     defaultOdooUrl: DEFAULT_ODOO_URL,
-    defaultToken: DEFAULT_TOKEN,
+    defaultToken: DEFAULT_ODOO_TOKEN,
     odooUrl: DEFAULT_ODOO_URL,
     pinCode: '',
-    token: DEFAULT_TOKEN,
+    token: DEFAULT_ODOO_TOKEN,
     user: null,
     error: '',
     notice: '',
@@ -76,7 +74,7 @@ export const useOdooStore = defineStore('odoo', {
         const response = await getClient().req.get('/0/settings/odoo_config');
         const config = response.data || {};
         this.defaultOdooUrl = config.default_odoo_url || DEFAULT_ODOO_URL;
-        this.defaultToken = config.default_token || DEFAULT_TOKEN;
+        this.defaultToken = config.default_token || DEFAULT_ODOO_TOKEN;
         this.enabled = config.enabled !== undefined ? Boolean(config.enabled) : true;
         this.odooUrl = config.odoo_url || config.base_url || this.defaultOdooUrl;
         this.pinCode = config.pin_code || '';
