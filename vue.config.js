@@ -12,18 +12,12 @@ const __dirname = path.dirname(__filename); // get the name of the directory
 const _COMMIT_HASH = child_process.execSync('git rev-parse --short HEAD').toString().trim();
 console.info('Commit hash:', _COMMIT_HASH);
 
-function firstEnv(...keys) {
-  for (const key of keys) {
-    const value = process.env[key]?.trim();
-    if (value) {
-      return value;
-    }
-  }
-  return '';
+function envValue(key) {
+  return process.env[key]?.trim() || '';
 }
 
-const _ODOO_URL = firstEnv('odoo_url', 'ODOO_URL', 'VUE_APP_ODOO_URL');
-const _ODOO_TOKEN = firstEnv('odoo_token', 'ODOO_TOKEN', 'VUE_APP_ODOO_TOKEN');
+const _ODOO_URL = envValue('odoo_url');
+const _ODOO_TOKEN = envValue('odoo_token');
 
 export default {
   pages: {
@@ -41,10 +35,6 @@ export default {
       options[0]['process.env'].VUE_APP_ON_ANDROID = argv.os == 'android';
       options[0]['process.env'].odoo_url = JSON.stringify(_ODOO_URL);
       options[0]['process.env'].odoo_token = JSON.stringify(_ODOO_TOKEN);
-      options[0]['process.env'].ODOO_URL = JSON.stringify(_ODOO_URL);
-      options[0]['process.env'].ODOO_TOKEN = JSON.stringify(_ODOO_TOKEN);
-      options[0]['process.env'].VUE_APP_ODOO_URL = JSON.stringify(_ODOO_URL);
-      options[0]['process.env'].VUE_APP_ODOO_TOKEN = JSON.stringify(_ODOO_TOKEN);
       return options;
     });
   },

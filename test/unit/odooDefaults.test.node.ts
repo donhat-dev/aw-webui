@@ -10,4 +10,16 @@ describe('Odoo default build config', () => {
     expect(resolveDefaultOdooUrl(env)).toBe('https://prod-odoo.example.com');
     expect(resolveDefaultOdooToken(env)).toBe('prod-token');
   });
+
+  test('ignores alias env keys and falls back to built-in defaults', () => {
+    const env = {
+      ODOO_URL: 'https://ignored-odoo.example.com',
+      ODOO_TOKEN: 'ignored-token',
+      VUE_APP_ODOO_URL: 'https://ignored-vue-odoo.example.com',
+      VUE_APP_ODOO_TOKEN: 'ignored-vue-token',
+    };
+
+    expect(resolveDefaultOdooUrl(env)).toBe('https://dev-hrm.lfglobaltech.com');
+    expect(resolveDefaultOdooToken(env)).toBe('ff914bde-b9aa-4499-b16f-e9c6554964b0');
+  });
 });
